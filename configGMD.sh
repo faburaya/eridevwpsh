@@ -18,7 +18,14 @@ function getLocalEndpoints()
 # param 2 = filter to apply (egz.: GMD, VMD, ...)
 function getServicePorts()
 {
-    cat /etc/services | grep $1 | grep $2 | sed 's/\/'$1'//g';
+    local reservedTcpPorts=$(cat /etc/services | grep $1 | grep $2 | sed 's/\/'$1'//g')
+    
+    if [ $(printf "${reservedTcpPorts}" | wc -l) -gt 0 ]
+    then
+        echo "${reservedTcpPorts}"
+    else
+        seq 50500 50515 | xargs -I{} echo "GMD{} {} # TCP port {}"
+    fi
 }
 
 # Configures GMD in the database
@@ -34,7 +41,9 @@ function configAndStartGMD()
     # Query the database table MSDSVTAB so as to figure which have already been taken by other GMD services:
     query="SELECT PORT FROM MSDSVTAB WHERE SUBTYPE <> 'R';"
     sqlResult=$(executeQuery "${query}")
-    txtCmdFilterOutPortsAlreadyTaken="| grep -v "$(echo $sqlResult | sed 's/ / \| grep -v /g')
+    txtCmdFilterOutPortsAlreadyTaken=$(echo $sqlResult | sed 's/ / \| grep -v /g')
+    
+    [[ $txtCmdFilterOutPortsAlreadyTaken = *[![:space:]]* ]] && txtCmdFilterOutPortsAlreadyTaken="| grep -v "$txtCmdFilterOutPortsAlreadyTaken
 
     # Get the key for the first free port available to our GMD service:
     gmdSvcTcpPortKey=$(eval "getServicePorts tcp GMD "$txtCmdFilterOutLocalTcpPortsInUse$txtCmdFilterOutPortsAlreadyTaken | head -1 | awk -F" " '{print $1}')
@@ -62,7 +71,7 @@ function configAndStartGMD()
     if [ -z "$gmdSvcId" ]
     then
         printf "${SetColorToLightRED}FAILED!\nCould not get MSDSVTAB.SRV_ID for SUBTYPE 'R' :(${SetNoColor}\n"
-        exit 1
+        exit 2
     fi
 
     printf "DONE!\n${SetColorToLightGREEN}GMD service ID is '$gmdSvcId' :)${SetNoColor}\n"
@@ -80,7 +89,7 @@ function configAndStartGMD()
     if [ -z "$vmdTcpPortKey" ]
     then
         printf "${SetColorToLightRED}FAILED!\nCould not find a free port available to VMD :(${SetNoColor}\n"
-        exit 1
+        exit 3
     fi
 
     printf "DONE!\n${SetColorToLightGREEN}TCP port '$vmdTcpPortKey' will be used :)${SetNoColor}\n"
@@ -108,7 +117,7 @@ function configAndStartGMD()
     if [ -z "$csvListSCCodes" ]
     then
         printf "${SetColorToLightRED}FAILED!\nCould not retrieve SCCODE's for markets GSM and ISDN :(\n"
-        exit 1
+        exit 4
     fi
 
     query="

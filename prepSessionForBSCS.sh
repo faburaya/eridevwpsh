@@ -2,6 +2,12 @@
 
 source ~/.bashrc
 
+if [ -z "$1" ]
+then
+    printf "${SetColorToRED}You must specify the database name!${SetNoColor}"
+    exit 1
+fi
+
 ##################################
 # Define some helpers for colors #
 ##################################
@@ -42,7 +48,7 @@ export ODBCINI=~/BSCS/1/VERTEX/odbc.ini;
 echo Setting profile...
 source setapp oracle 11.2.0.4.0.64 1> /dev/null
 source ~/definedb $1 1> /dev/null
-gitRepoPath=$(echo ~/gitViews/release_bscsix4_master)
+gitRepoPath=$(echo ~/gitViews/bss)
 cd $gitRepoPath"/lhsj_main/bscs/bin"
 source ./profile 1> /dev/null 2> /dev/null
 cd $gitRepoPath"/lhsj_main/bscs/batch"

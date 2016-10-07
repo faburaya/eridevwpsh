@@ -5,7 +5,7 @@
 startModule()
 {
     modName=$(echo "$1" | awk '{print toupper($0)}')
-    scriptFileName=$(echo ~/_tempScript_start)$modName".sh"
+    scriptFileName=$(echo ~/_tempScript_start)$modName$RANDOM".sh"
     printf "\nStarting $modName...\n"
     echo "#!/bin/bash" >> $scriptFileName
     echo "$BSCS_BIN/"$@ >> $scriptFileName
@@ -27,20 +27,21 @@ printf "\n##### RDH (PRIH) #####\n\n"
 rdh -t2 -prih &
 sleep 3
 
-printf "\n##### RDH (RIH Partition 0) #####\n\n"
-rdh -t2 -rih &
+printf "\n##### RDH (RIH Partition 1) #####\n\n"
+rdh -t2 -rih -p1 &
 sleep 3
 
-#printf "\n##### RDH (RIH Partition 2) #####\n\n"
-#rdh -t2 -rih -p2 &
-#sleep 3
+printf "\n##### RDH (RIH Partition 2) #####\n\n"
+rdh -t2 -rih -p2 &
+sleep 3
 
-#printf "\n##### RDH (CCH) #####\n\n"
-#rdh -t2 -cch &
-#sleep 3
+printf "\n##### RDH (CCH) #####\n\n"
+rdh -t2 -cch &
+sleep 3
 
 startModule prih -e -t
-startModule rih -e -t
+startModule rih -e -t -p 1
+startModule rih -e -t -p 2
 
 printf "\n##### My Processes #####\n\n"
 ps -ef | grep $(whoami) | grep -v grep | grep -v 'ps -ef' | grep -v sshd:

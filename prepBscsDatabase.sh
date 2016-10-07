@@ -211,12 +211,12 @@ EOF
     printf "\n${SetColorToLightBLUE}Running DMF...${SetNoColor}\n"
     
     # show time:
-    printf "\nMigStart.pl start --setup_file standard_upgrade_1_set.xml ... \n"
-    MigStart.pl start --setup_file standard_upgrade_1_set.xml >> $pathToBuild/dmfRunLog.txt
-    printf "\nMigStart.pl init --setup_file standard_upgrade_1_set.xml ... \n"
-    MigStart.pl init --setup_file standard_upgrade_1_set.xml >> $pathToBuild/dmfRunLog.txt
-    printf "\nMigStart.pl start --setup_file standard_upgrade_1_set.xml ... \n"
-    MigStart.pl start --setup_file standard_upgrade_1_set.xml >> $pathToBuild/dmfRunLog.txt
+    printf "\n${SetColorToLightYELLOW}MigStart.pl start --setup_file standard_upgrade_1_set.xml ...${SetNoColor}\n"
+    MigStart.pl start --setup_file standard_upgrade_1_set.xml 2>&1 | grep -B8 -A4 DMF_ERROR >> $pathToBuild/dmfRunLog.txt
+    printf "\n${SetColorToLightYELLOW}MigStart.pl init --setup_file standard_upgrade_1_set.xml ...${SetNoColor}\n"
+    MigStart.pl init --setup_file standard_upgrade_1_set.xml 2>&1 | grep -B8 -A4 DMF_ERROR >> $pathToBuild/dmfRunLog.txt
+    printf "\n${SetColorToLightYELLOW}MigStart.pl start --setup_file standard_upgrade_1_set.xml ...${SetNoColor}\n"
+    MigStart.pl start --setup_file standard_upgrade_1_set.xml 2>&1 | grep -B8 -A4 DMF_ERROR >> $pathToBuild/dmfRunLog.txt
 }
 
 ##################################

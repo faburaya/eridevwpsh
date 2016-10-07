@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ~/configGMD.sh
+. ~/scripts/configGMD.sh
 
 printf "\nStarting naming service...\n"
 #nohup $BSCS_SCRIPTS/startNamingService.sh > namingService.out &

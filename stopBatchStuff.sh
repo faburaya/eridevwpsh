@@ -5,7 +5,7 @@ dmh --shutdown
 sleep 5
 
 printf "\nCleaning shared memory:\n"
-~/gitViews/release_bscsix4_master/lhsj_main/bscs/batch/src/rdh/delShm.sh
+~/gitViews/bss/lhsj_main/bscs/batch/src/rdh/delShm.sh
 
 rm ~/_tempScript_*.sh 2> /dev/null
 
