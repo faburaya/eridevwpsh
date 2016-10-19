@@ -24,7 +24,8 @@ function getServicePorts()
     then
         echo "${reservedTcpPorts}"
     else
-        seq 50500 50515 | xargs -I{} echo "GMD{} {} # TCP port {}"
+        reservedTcpPorts=$(cat /etc/services | grep $1 | tail -50 | sed 's/\/'$1'//g' | sort -R)
+        echo "${reservedTcpPorts}"
     fi
 }
 

@@ -12,7 +12,6 @@ startModule()
     echo "read  -n 1 -p 'Press any key to close this window...' anything" >> $scriptFileName
     chmod +x $scriptFileName
     xterm -T $(hostname)" - "$modName $scriptFileName &
-    sleep 10
 }
 
 data &
@@ -42,6 +41,7 @@ sleep 3
 startModule prih -e -t
 startModule rih -e -t -p 1
 startModule rih -e -t -p 2
+sleep 40
 
 printf "\n##### My Processes #####\n\n"
 ps -ef | grep $(whoami) | grep -v grep | grep -v 'ps -ef' | grep -v sshd:
