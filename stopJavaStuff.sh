@@ -12,9 +12,9 @@ then
     printf "DONE!\n"
 fi
 
-ps -ef | grep $(whoami) | grep -v grep | grep -v 'ps -ef' | grep -v sshd: |  grep -i 'tao_cosnaming\|fedfactory\|cms\|pms\|billsrv' | awk -F" " '{ print $2 }' | xargs -I{} kill {}
+ps -ef | grep $(whoami) | grep -v grep | grep -v 'ps -ef' | grep -v sshd: |  grep -i 'naming_service\|tao_cosnaming\|fedfactory\|cms\|pms\|billsrv' | awk -F" " '{ print $2 }' | xargs -I{} kill {}
 
-stopGMD()
+function stopGMD()
 {
     printf "\nStopping GMD...\n"
     $BSCS_SCRIPTS/STOP_GMD 1> /dev/null

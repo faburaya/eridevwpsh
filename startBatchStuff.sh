@@ -16,6 +16,14 @@ startModule()
 
 data &
 
+# Start the modules before RDH instances, because X server takes a while to respond...
+startModule prih -e -t
+startModule rih -e -t
+#startModule rih -e -t -p 2
+startModule eoh -t 1
+startModule cch -t
+startModule rlh -13 -t1
+
 rm $BSCS_WORKDIR/CTRL/RDH* 2> /dev/null
 
 printf "\n##### RDH (UDMAP) #####\n\n"
@@ -26,22 +34,24 @@ printf "\n##### RDH (PRIH) #####\n\n"
 rdh -t2 -prih &
 sleep 3
 
-printf "\n##### RDH (RIH Partition 1) #####\n\n"
-rdh -t2 -rih -p1 &
+printf "\n##### RDH (RIH Partition 0) #####\n\n"
+rdh -t2 -rih &
 sleep 3
 
-printf "\n##### RDH (RIH Partition 2) #####\n\n"
-rdh -t2 -rih -p2 &
-sleep 3
+#printf "\n##### RDH (RIH Partition 2) #####\n\n"
+#rdh -t2 -rih -p2 &
+#sleep 3
 
 printf "\n##### RDH (CCH) #####\n\n"
 rdh -t2 -cch &
 sleep 3
 
-startModule prih -e -t
-startModule rih -e -t -p 1
-startModule rih -e -t -p 2
-sleep 40
+printf "\n##### RDH (BCH) #####\n\n"
+rdh -t2 -bch &
+sleep 3
+
+# Wait for the modules to start...
+sleep 30
 
 printf "\n##### My Processes #####\n\n"
 ps -ef | grep $(whoami) | grep -v grep | grep -v 'ps -ef' | grep -v sshd:

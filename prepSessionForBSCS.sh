@@ -1,13 +1,5 @@
 #!/bin/bash
 
-source ~/.bashrc
-
-if [ -z "$1" ]
-then
-    printf "${SetColorToRED}You must specify the database name!${SetNoColor}"
-    exit 1
-fi
-
 ##################################
 # Define some helpers for colors #
 ##################################
@@ -22,7 +14,13 @@ export SetColorToBLUE='\033[0;34m';
 export SetColorToLightBLUE='\033[1;34m';
 export SetColorToWHITE='\033[0;37m';
 export SetNoColor='\033[0m';
-    
+
+if [ -z "$1" ]
+then
+    printf "${SetColorToRED}You must specify the database name!${SetNoColor}"
+    exit 1
+fi
+
 ########################################
 # Environment Variables for BSCS batch #
 ########################################

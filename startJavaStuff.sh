@@ -2,6 +2,12 @@
 
 . ~/scripts/configGMD.sh
 
+# Should deploy CX & AX from new java build?
+if [ "$1" = "deploy" ]
+then
+    chmod +x $BSCS_SCRIPTS/*.sh
+fi
+
 printf "\nStarting naming service...\n"
 #nohup $BSCS_SCRIPTS/startNamingService.sh > namingService.out &
 xterm -T $(hostname)' - Naming Service' $BSCS_SCRIPTS/startNamingService.sh &
