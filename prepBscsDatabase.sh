@@ -123,7 +123,7 @@ function importDatabaseDump()
     fi
     
     # invoke dump import:
-    local fileNameDump=$(ls -tr $dumpsDir | grep -E "${dbDumpOrigin}.*\.dp\.dmp\.bz2$" | tail -1)
+    local fileNameDump=$(ls -tr $dumpsDir | grep "${dbDumpOrigin}" | grep -e "\.dp\.dmp\.bz2$\|\.dmp$" | tail -1)
     if [ -n "${fileNameDump}" ]
     then
         cd /home/systest/ccviews/ST_TOOLS_generic/vobs/but_qatd/systest/util
@@ -162,29 +162,26 @@ function runDmfBuild()
     
     eval "cd ${pathToBuild} || exit -6"
     
-    # Apply fixes for FullStack bullshit:
-    if [ -n "$isFullStack" ]
-    then
-        printf "\n${SetColorToLightBLUE}Applying fixes to FullStack database before running DMF...${SetNoColor}\n"
+    # Apply fixes for bullshit:
+    printf "\n${SetColorToLightBLUE}Applying fixes to database before running DMF...${SetNoColor}\n"
 
-        sqlplus -S -L SYSTEM/SYSADM << EOF
+    sqlplus -S -L SYSTEM/SYSADM << EOF
 ALTER USER SYS IDENTIFIED BY SYSADM;
 EOF
-        sqlplus -L SYS/SYSADM@$BSCSDB AS SYSDBA @dmf/dab/admin/orasys/MIGC_user_system_1_sys.sql || exit -7
-        
-        printf "GRANT SELECT ON DBA_SYNONYMS TO DMFADM;
-                GRANT SELECT ON V_\$SESSION TO SYSADM WITH GRANT OPTION;
-                GRANT SELECT ON V_\$DATABASE TO SYSADM WITH GRANT OPTION;
-                GRANT SELECT ON DBA_TAB_COLUMNS TO DMFADM;
-                GRANT INHERIT ANY PRIVILEGES TO DMFADM;
-                ALTER PACKAGE DMFADM.DABUTIL COMPILE;
-                ALTER PACKAGE DMFADM.MIGSERVICE COMPILE;
-                UPDATE RTX_CONTROL SET NAME_RTX_DB='${BSCSDB}';
-                COMMIT;
-                quit\n" > fix.sql
+    sqlplus -L SYS/SYSADM@$BSCSDB AS SYSDBA @dmf/dab/admin/orasys/MIGC_user_system_1_sys.sql || exit -7
+    
+    printf "GRANT SELECT ON DBA_SYNONYMS TO DMFADM;
+            GRANT SELECT ON V_\$SESSION TO SYSADM WITH GRANT OPTION;
+            GRANT SELECT ON V_\$DATABASE TO SYSADM WITH GRANT OPTION;
+            GRANT SELECT ON DBA_TAB_COLUMNS TO DMFADM;
+            GRANT INHERIT ANY PRIVILEGES TO DMFADM;
+            ALTER PACKAGE DMFADM.DABUTIL COMPILE;
+            ALTER PACKAGE DMFADM.MIGSERVICE COMPILE;
+            UPDATE RTX_CONTROL SET NAME_RTX_DB='${BSCSDB}';
+            COMMIT;
+            quit\n" > fix.sql
 
-        sqlplus -L SYS/SYSADM@$BSCSDB AS SYSDBA @fix.sql  || exit -8
-    fi
+    sqlplus -L SYS/SYSADM@$BSCSDB AS SYSDBA @fix.sql  || exit -8
     
     chmod +x dmf/scripts/*.esh
 
@@ -227,7 +224,7 @@ helpUsageText="
 Usage:
 
 prepBscsDatabase.sh targetDatabaseName
-                    [ora12][fullstack]
+                    [ora12]
                     [clean]
                     [build=pathToDirDmfBuildFromJenkins | download=urlToDownloadDmfBuildFromJenkins]
                     [export=databaseNameWhoseDumpMustBeExported | import=databaseNameWhoseDumpMustBeImported]
@@ -265,11 +262,11 @@ do
             echo "* Toolset for Oracle 12 will used"
         fi
     
-    # is the BSCS database FullStack?
-    elif [ $(echo $param | awk '{print tolower($0)}') = "fullstack" ]
-    then
-        isFullStack=1
-        echo "* Fixes for FullStack database will be applied"
+    # is the BSCS database TMO?
+    #elif [ $(echo $param | awk '{print tolower($0)}') = "tmo" ]
+    #then
+    #    isTMO=1
+    #    echo "* Fixes for TMO database will be applied"
     
     # must clean-up the database
     elif [ $(echo $param | awk '{print tolower($0)}') = "clean" ]

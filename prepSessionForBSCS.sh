@@ -29,6 +29,7 @@ export USE_DEBUG=1;
 export RIH_SET_TRACE=1;
 export TRACE_PRIH=1;
 export TRACE_RIH=1;
+export UDMAP_TRACEFILE=/home/aburayaf/BSCS/1/WORKDIR/TMP/UDMAP.trc
 export AUT_DEBUG=1;
 export BSCS_PASSWD=~/bscs.passwd;
 export BSCS_WORKDIR=~/BSCS/1/WORKDIR;
@@ -124,9 +125,12 @@ echo -e "
 # Helpers #
 ###########
 
+shopt -s expand_aliases
+
 list_error_files() # list error log of (grep search key)
 {
-    ls -ltr $BSCS_WORKDIR/TMP | grep -i "^$1.*\.ERR$";
+    ls -ltr $BSCS_WORKDIR/TMP | grep -i " $1.*\.err$";
+    ls -ltr $BSCS_LOG/$(echo $1 | awk '{print tolower($0)}') 2> /dev/null | grep -i "\.err$";
 }
 
 view_last_error_file() #view last error log of (grep search key)
@@ -136,7 +140,8 @@ view_last_error_file() #view last error log of (grep search key)
 
 list_log_trace_files() # list trace files of (grep search key)
 {
-    ls -ltr $BSCS_WORKDIR/LOG | grep -i "^$1.*\.trc$";
+    ls -ltr $BSCS_WORKDIR/LOG | grep -i " $1.*\.trc$";
+    ls -ltr $BSCS_LOG/$(echo $1 | awk '{print tolower($0)}') 2> /dev/null | grep -i "\.trc$";
 }
 
 view_last_log_trace_file() #view last trace file of (grep search key)
@@ -146,7 +151,8 @@ view_last_log_trace_file() #view last trace file of (grep search key)
 
 list_log_files() # list log files of (grep search key)
 {
-    ls -ltr $BSCS_WORKDIR/LOG | grep -i "^$1.*\.log$";
+    ls -ltr $BSCS_WORKDIR/LOG | grep -i " $1.*\.log$\| $1.*\.ctr$";
+    ls -ltr $BSCS_LOG/$(echo $1 | awk '{print tolower($0)}') 2> /dev/null | grep -i "\.log$\|\.ctr$";
 }
 
 view_last_log_file() #view last log file of (grep search key)
@@ -176,7 +182,7 @@ rebuild_batch_modules()
     cd $gitRepoPath"/lhsj_main/bscs/batch"
     gmake purge
     find . | grep '\.so$\|\.o$' | xargs rm
-    gmake $@
+    gmake -s $@
     ls -ltr $BSCS_BIN
 }
 
@@ -212,7 +218,7 @@ display_my_helpers()
 
       lserr: list error log files
      vwlerr: view last error log file
-      lslog: list long files
+      lslog: list log files
      vwllog: view last log file
       lstrc: list trace log files
      vwltrc: view last log trace file

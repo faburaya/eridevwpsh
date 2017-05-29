@@ -8,6 +8,7 @@ if [ "$1" = "clean" ]
 then
     printf "\nCleaning web app installation... "
     rm -rf $TOMCAT_HOME/webapps/ax_full
+    rm -rf $TOMCAT_HOME/webapps/admx_full
     rm -rf $TOMCAT_HOME/webapps/custcare_cu
     printf "DONE!\n"
 fi
